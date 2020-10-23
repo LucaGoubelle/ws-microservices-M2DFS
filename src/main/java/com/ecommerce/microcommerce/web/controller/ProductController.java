@@ -16,14 +16,23 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
-
-
+@Api(value="ecommercePROJECT")
+@RestController
 public class ProductController {
 
     @Autowired
     private ProductDao productDao;
+
+    public List<Product> listeProduits = new ArrayList<Product>(){
+        {
+            add(new Product(2, "Aspirateur Robot", 500,200));
+            add(new Product(1, "Ordinateur Portable",350, 120));
+            add(new Product(3, "Table de Ping Pong", 750, 400));
+        }
+    };
 
 
     //Récupérer la liste des produits
@@ -39,8 +48,15 @@ public class ProductController {
 
 
     //Récupérer un produit par son Id
-    public Product afficherUnProduit() {
-        return null;
+    @ApiOperation(value = "get specified product by id", response = Product.class, tags= "getById")
+    @RequestMapping(value = "/getProductById/{productId}", method=RequestMethod.GET)
+    public Product afficherUnProduit(int productId) {
+        for(int i=0;i<listeProduits.size();i++){
+            if(listeProduits.get(i).getId()==productId){
+                return listeProduits.get(i);
+            }
+        }
+        return new Product(0, "NA", 0, 0);
     }
 
 
@@ -65,11 +81,20 @@ public class ProductController {
     }
 
     // supprimer un produit
-    public void supprimerProduit() {
+    @ApiOperation(value = "delete specified product by id", response = Product.class, tags= "delete")
+    @RequestMapping(value = "/deleteProduct/{productId}", method=RequestMethod.DELETE)
+    public void supprimerProduit(int productId) {
+        this.productDao.delete(productId);
     }
 
     // Mettre à jour un produit
+    @ApiOperation(value = "update specified product", response = Product.class, tags= "update")
+    @RequestMapping(value = "/updateProductById/{product}", method=RequestMethod.PUT)
     public void updateProduit(@RequestBody Product product) {
+        Product p = productDao.findById(product.getId());
+        p.setNom(product.getNom());
+        p.setPrix(product.getPrix());
+        p.setPrixAchat(product.getPrixAchat());
     }
 
 

@@ -104,6 +104,28 @@ public class ProductController {
         return productDao.chercherUnProduitCher(400);
     }
 
+    //Test ordre alphabetique
+    @GetMapping(value = "test/produits/orderByName")
+    public List<Product> testOrderAlphabet(){
+        return productDao.trierProduitsParOrdreAlphabetique();
+    }
+
+    //calculMargeProduit
+    @GetMapping("/adminProduits")
+    public String calculerMargeProduit(){
+        String s = "";
+        s+="{\n";
+
+        for(int i = 0;i<productDao.count();i++){
+            Product p = productDao.findById(i);
+            int margin = p.getPrix() - p.getPrixAchat();
+            s += p.toString()+" : "+String.valueOf(margin)+"\n";
+        }
+
+        s+="}";
+        return s;
+    }
+
 
 
 }

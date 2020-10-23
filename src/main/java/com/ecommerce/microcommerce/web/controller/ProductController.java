@@ -69,7 +69,7 @@ public class ProductController {
 
         Product productAdded =  productDao.save(product);
 
-        if(product.getPrixAchat()==0){
+        if(product.getPrix()==0){
             throw new ProduitGratuitException("Produit Gratuit, pas normal !");
         }
 
@@ -116,7 +116,7 @@ public class ProductController {
     }
 
     //calculMargeProduit
-    @GetMapping("/adminProduits")
+    @GetMapping("/adminProduits/margin")
     public String calculerMargeProduit(){
         String s = "";
         s+="{\n";

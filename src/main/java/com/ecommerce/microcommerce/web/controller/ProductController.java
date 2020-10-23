@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.ProduitGratuitException;
 import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -51,9 +52,9 @@ public class ProductController {
     @ApiOperation(value = "get specified product by id", response = Product.class, tags= "getById")
     @RequestMapping(value = "/getProductById/{productId}", method=RequestMethod.GET)
     public Product afficherUnProduit(int productId) {
-        for(int i=0;i<listeProduits.size();i++){
-            if(listeProduits.get(i).getId()==productId){
-                return listeProduits.get(i);
+        for(int i=0;i<productDao.count();i++){
+            if(productDao.findById(i).getId()==productId){
+                return productDao.findById(i);
             }
         }
         return new Product(0, "NA", 0, 0);
@@ -64,9 +65,13 @@ public class ProductController {
 
     //ajouter un produit
     @PostMapping(value = "/Produits")
-    public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) {
+    public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) throws ProduitGratuitException {
 
         Product productAdded =  productDao.save(product);
+
+        if(product.getPrixAchat()==0){
+            throw new ProduitGratuitException("Produit Gratuit, pas normal !");
+        }
 
         if (productAdded == null)
             return ResponseEntity.noContent().build();
